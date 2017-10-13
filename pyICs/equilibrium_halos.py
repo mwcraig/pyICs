@@ -549,12 +549,13 @@ class EquilibriumHalo:
         This method actually creates the halo
         """
         self.__make_dark_halo()
-        self.__make_gas_sphere()
-        self.__calc_j_max()
-        self.__invert_ang_mom_profile()
-        self.__set_gas_velocities()
-        self.__calc_gravity_pressure()
-        self.__calc_temp()
+        if self.__n_gas_particles > 0:
+            self.__make_gas_sphere()
+            self.__calc_j_max()
+            self.__invert_ang_mom_profile()
+            self.__set_gas_velocities()
+            self.__calc_gravity_pressure()
+            self.__calc_temp()
 
     def finalize(self):
         """
@@ -563,7 +564,10 @@ class EquilibriumHalo:
         self.sim.properties['a'] = 0.
         self.sim.properties['time'] = 0.
         self.sim.g['metals'] = 0.
-        del(self.sim['pressure'], self.sim['mu'])
+        try:
+            del(self.sim['pressure'], self.sim['mu'])
+        except KeyError:
+            pass
         if self.__type == tipsy.TipsySnap:
             self.sim.physical_units(mass='2.325e5 Msol')
         else:
